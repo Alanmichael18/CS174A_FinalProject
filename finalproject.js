@@ -1,8 +1,10 @@
 import {defs, tiny} from './examples/common.js';
 
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene,
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene, Texture
 } = tiny;
+
+const {Textured_Phong} = defs
 
 class Cube extends Shape {
     constructor() {
@@ -96,8 +98,8 @@ class Base_Scene extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             floor: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#0000ff")}),
-            building: new Material(new defs.Phong_Shader(),
-                {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
+            building: new Material(new Textured_Phong(),
+                {ambient: .4, texture: new Texture("assets/BrickWall.jpg", "NEAREST")}),
         };
         // The white material and basic shader are used for drawing the outline.
         this.white = new Material(new defs.Basic_Shader());
@@ -247,7 +249,7 @@ export class Assignment2 extends Base_Scene {
         this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
         
         let building_transform = model_transform.times(Mat4.scale(5,10,5)).times(Mat4.translation(5,0,5));
-        this.shapes.building.draw(context, program_state, building_transform, this.materials.plastic);
+        this.shapes.building.draw(context, program_state, building_transform, this.materials.building);
 
     }
 }
