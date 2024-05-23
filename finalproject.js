@@ -87,6 +87,7 @@ class Base_Scene extends Scene {
             'strip': new Cube_Single_Strip(),
 
             'floor': new Cube(),
+            'building': new Cube(),
         };
 
         // *** Materials
@@ -95,6 +96,8 @@ class Base_Scene extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             floor: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#0000ff")}),
+            building: new Material(new defs.Phong_Shader(),
+                {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
         };
         // The white material and basic shader are used for drawing the outline.
         this.white = new Material(new defs.Basic_Shader());
@@ -234,19 +237,22 @@ export class Assignment2 extends Base_Scene {
         // Example for drawing a cube, you can remove this line if needed
         // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
-        model_transform = this.draw_box(context, program_state, model_transform, 0, 1);
+        // model_transform = this.draw_box(context, program_state, model_transform, 0, 1);
+        this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic);
 
         let t = program_state.animation_time;
-
-        let floor = model_transform.times(Mat4.scale(150, 0.5, 150)).times(Mat4.translation(0, -10, 0));
-        this.shapes.floor.draw(context, program_state, floor, this.materials.floor)
         
-        
+        // placeholder box for gun in center of screen
         const bottom_center = Mat4.inverse(program_state.camera_inverse)
                                  .times(Mat4.translation(0, -5, -15)); // Adjust the translation values as needed
         const center_color = hex_color("#ff0000");
 
         this.shapes.cube.draw(context, program_state, bottom_center, this.materials.plastic.override({color: center_color}));
+        let floor_transform = model_transform.times(Mat4.scale(150, 0.5, 150)).times(Mat4.translation(0, -2.5, 0));
+        this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
+        
+        let building_transform = model_transform.times(Mat4.scale(5,10,5)).times(Mat4.translation(5,0,5));
+        this.shapes.building.draw(context, program_state, building_transform, this.materials.plastic);
 
     }
 }
