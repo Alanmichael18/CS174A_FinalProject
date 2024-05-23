@@ -241,6 +241,7 @@ export class Assignment2 extends Base_Scene {
         this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic);
 
         let t = program_state.animation_time;
+        
 
         let floor_transform = model_transform.times(Mat4.scale(150, 0.5, 150)).times(Mat4.translation(0, -2.5, 0));
         this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
