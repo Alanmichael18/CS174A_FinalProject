@@ -241,7 +241,12 @@ export class Assignment2 extends Base_Scene {
         let floor = model_transform.times(Mat4.scale(150, 0.5, 150)).times(Mat4.translation(0, -10, 0));
         this.shapes.floor.draw(context, program_state, floor, this.materials.floor)
         
+        
+        const bottom_center = Mat4.inverse(program_state.camera_inverse)
+                                 .times(Mat4.translation(0, -5, -15)); // Adjust the translation values as needed
+        const center_color = hex_color("#ff0000");
 
+        this.shapes.cube.draw(context, program_state, bottom_center, this.materials.plastic.override({color: center_color}));
 
     }
 }
