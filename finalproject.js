@@ -83,14 +83,18 @@ class Base_Scene extends Scene {
         this.shapes = {
             'cube': new Cube(),
             'outline': new Cube_Outline(),
-
+            
             'strip': new Cube_Single_Strip(),
+
+            'floor': new Cube(),
         };
 
         // *** Materials
         this.materials = {
             plastic: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
+            floor: new Material(new defs.Phong_Shader(),
+                {ambient: .4, diffusivity: .6, color: hex_color("#0000ff")}),
         };
         // The white material and basic shader are used for drawing the outline.
         this.white = new Material(new defs.Basic_Shader());
@@ -233,6 +237,9 @@ export class Assignment2 extends Base_Scene {
         model_transform = this.draw_box(context, program_state, model_transform, 0, 1);
 
         let t = program_state.animation_time;
+
+        let floor = model_transform.times(Mat4.scale(150, 0.5, 150)).times(Mat4.translation(0, -10, 0));
+        this.shapes.floor.draw(context, program_state, floor, this.materials.floor)
         
 
 
