@@ -1,4 +1,5 @@
 import {defs, tiny} from './examples/common.js';
+import {Shape_From_File} from "./examples/obj-file-demo.js";
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene, Texture
@@ -113,6 +114,7 @@ class Base_Scene extends Scene {
 
             'floor': new Cube(),
             'building': new Cube(),
+            'gun': new Shape_From_File("assets/gun.obj"), // gun shape
             // 'guy': new guy(),
         };
 
@@ -126,6 +128,8 @@ class Base_Scene extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ff0000")}),
             // building: new Material(new Textured_Phong(),
             //     {ambient: .4, texture: new Texture("assets/BrickWall.jpg", "NEAREST")}),
+            gun: new Material(new Textured_Phong(),
+                {ambient: color(1,1,1,1), diffuse: [.64, .64, .64], specular: [0, 0, 0], emissive: [0, 0, 0], opticalDensity: 1.0, opacity: 1.0,  illum: 1, texture: new Texture("assets/gun.png")}),
         };
         // The white material and basic shader are used for drawing the outline.
         this.white = new Material(new defs.Basic_Shader());
@@ -305,5 +309,8 @@ export class Assignment2 extends Base_Scene {
 
         let building_transform3 = model_transform.times(Mat4.scale(10,10,5)).times(Mat4.translation(0,0,-5));
         this.shapes.building.draw(context, program_state, building_transform3, this.materials.building);
+
+        const gun_transform = Mat4.inverse(program_state.camera_inverse).times(Mat4.translation(0, -5, -15)).times(Mat4.scale(2, 2, 1)); 
+        this.shapes.gun.draw(context, program_state, gun_transform, this.materials.gun);
     }
 }
