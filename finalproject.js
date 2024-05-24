@@ -318,9 +318,11 @@ export class Assignment2 extends Base_Scene {
         const gun_transform = Mat4.inverse(program_state.camera_inverse).times(Mat4.translation(0, -5, -15)).times(Mat4.scale(2, 2, 1)); 
         this.shapes.gun.draw(context, program_state, gun_transform, this.materials.gun);
 
-        this.sky_transform = Mat4.identity().times(Mat4.translation(0, 0, 0)).times(Mat4.scale(75, 75, 75));
-        this.shapes.sky.draw(context, program_state, this.sky_transform, this.materials.sky);
-
-
+        // this.sky_transform = Mat4.identity().times(Mat4.translation(0, 0, 0)).times(Mat4.scale(75, 75, 75));
+        // this.shapes.sky.draw(context, program_state, this.sky_transform, this.materials.sky);
+        
+        // temporary sky fix
+        const cube_transform = Mat4.inverse(program_state.camera_inverse).times(Mat4.translation(0, -4, -15)).times(Mat4.scale(75, 75, 75));
+        this.shapes.cube.draw(context, program_state, cube_transform, this.materials.plastic.override({color: hex_color("#afeeee")}));  
     }
 }
