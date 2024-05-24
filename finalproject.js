@@ -8,7 +8,6 @@ const {
 const {Textured_Phong} = defs
 
 
-
 class Cube extends Shape {
     constructor() {
         super("position", "normal",);
@@ -143,6 +142,9 @@ class Base_Scene extends Scene {
     display(context, program_state) {
         // display():  Called once per frame of animation. Here, the base class's display only does
         // some initial setup.
+
+        context.context.enable(context.context.BLEND);
+    context.context.blendFunc(context.context.SRC_ALPHA, context.context.ONE_MINUS_SRC_ALPHA);
 
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
         if (!context.scratchpad.controls) {
