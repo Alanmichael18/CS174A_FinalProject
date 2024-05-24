@@ -1,10 +1,12 @@
 import {defs, tiny} from './examples/common.js';
+import {Shape_From_File} from "./examples/obj-file-demo.js";
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Matrix, Mat4, Light, Shape, Material, Scene, Texture
 } = tiny;
 
 const {Textured_Phong} = defs
+
 
 class Cube extends Shape {
     constructor() {
@@ -90,6 +92,7 @@ class Base_Scene extends Scene {
 
             'floor': new Cube(),
             'building': new Cube(),
+            'gun': new Shape_From_File("assets/gun.obj"), // gun shape
         };
 
         // *** Materials
@@ -98,8 +101,12 @@ class Base_Scene extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             floor: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#0000ff")}),
-            building: new Material(new Textured_Phong(),
-                {ambient: .4, texture: new Texture("assets/BrickWall.jpg", "NEAREST")}),
+            // building: new Material(new Textured_Phong(),
+            //     {ambient: .4, texture: new Texture("assets/BrickWall.jpg", "NEAREST")}),
+            building: new Material(new defs.Phong_Shader(),
+                {ambient: .4, diffusivity: .6, color: hex_color("#ff0000")}),
+            gun: new Material(new Textured_Phong(),
+                {ambient: color(1,1,1,1), diffuse: [.64, .64, .64], specular: [0, 0, 0], emissive: [0, 0, 0], opticalDensity: 1.0, opacity: 1.0,  illum: 1, texture: new Texture("assets/gun.png")}),
         };
         // The white material and basic shader are used for drawing the outline.
         this.white = new Material(new defs.Basic_Shader());
@@ -113,6 +120,9 @@ class Base_Scene extends Scene {
     display(context, program_state) {
         // display():  Called once per frame of animation. Here, the base class's display only does
         // some initial setup.
+
+        context.context.enable(context.context.BLEND);
+    context.context.blendFunc(context.context.SRC_ALPHA, context.context.ONE_MINUS_SRC_ALPHA);
 
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
         if (!context.scratchpad.controls) {
@@ -245,16 +255,18 @@ export class Assignment2 extends Base_Scene {
         let t = program_state.animation_time;
         
         // placeholder box for gun in center of screen
-        const bottom_center = Mat4.inverse(program_state.camera_inverse)
-                                 .times(Mat4.translation(0, -5, -15)); // Adjust the translation values as needed
-        const center_color = hex_color("#ff0000");
+        // const bottom_center = Mat4.inverse(program_state.camera_inverse).times(Mat4.translation(0, -5, -15)); 
+        // const center_color = hex_color("#ff0000");
+        // this.shapes.cube.draw(context, program_state, bottom_center, this.materials.plastic.override({color: center_color}));
 
-        this.shapes.cube.draw(context, program_state, bottom_center, this.materials.plastic.override({color: center_color}));
         let floor_transform = model_transform.times(Mat4.scale(150, 0.5, 150)).times(Mat4.translation(0, -2.5, 0));
         this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
         
         let building_transform = model_transform.times(Mat4.scale(5,10,5)).times(Mat4.translation(5,0,5));
         this.shapes.building.draw(context, program_state, building_transform, this.materials.building);
+
+        const gun_transform = Mat4.inverse(program_state.camera_inverse).times(Mat4.translation(0, -5, -15)).times(Mat4.scale(2, 2, 1)); 
+        this.shapes.gun.draw(context, program_state, gun_transform, this.materials.gun);
 
     }
 }
