@@ -114,6 +114,7 @@ class Base_Scene extends Scene {
             'floor': new Cube(),
             'building': new Cube(),
             'gun': new Shape_From_File("assets/gun.obj"), // gun shape
+            'sky': new defs.Subdivision_Sphere(4),
             // 'guy': new guy(),
         };
 
@@ -125,6 +126,8 @@ class Base_Scene extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#0000ff")}),
             building: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#ff0000")}),
+            sky: new Material(new defs.Phong_Shader(),
+                {ambient: .8, diffusivity: .9, color: hex_color("#add8e6")}),
             // building: new Material(new Textured_Phong(),
             //     {ambient: .4, texture: new Texture("assets/BrickWall.jpg", "NEAREST")}),
             gun: new Material(new Textured_Phong(),
@@ -314,5 +317,10 @@ export class Assignment2 extends Base_Scene {
 
         const gun_transform = Mat4.inverse(program_state.camera_inverse).times(Mat4.translation(0, -5, -15)).times(Mat4.scale(2, 2, 1)); 
         this.shapes.gun.draw(context, program_state, gun_transform, this.materials.gun);
+
+        this.sky_transform = Mat4.identity().times(Mat4.translation(0, 0, 0)).times(Mat4.scale(75, 75, 75));
+        this.shapes.sky.draw(context, program_state, this.sky_transform, this.materials.sky);
+
+
     }
 }
