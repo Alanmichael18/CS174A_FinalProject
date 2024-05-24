@@ -6,6 +6,8 @@ const {
 
 const {Textured_Phong} = defs
 
+
+
 class Cube extends Shape {
     constructor() {
         super("position", "normal",);
@@ -24,9 +26,30 @@ class Cube extends Shape {
     }
 }
 
+// const guy = defs.guy =
+//         class guy extends Shape {constructor() {
+//             super("position", "normal");
+
+//             const head = Mat4.scale(1, 1,1);
+//             const body = Mat4.scale(1.5, 2, 1);
+//             const legs = Mat4.scale(0.5, 1.5, 0.5);
+
+//             // let small_box_transform_1 = Mat4.translation(0, -2, 0).times(Mat4.scale(0.5, 0.5, 0.5));
+//             // let small_box_transform_2 = Mat4.translation(2, -2, 0).times(Mat4.scale(0.5, 0.5, 0.5));
+//             // this.shapes.cube.draw(context, program_state, box_transform.times(guy_transform), this.materials.plastic);
+//             // this.shapes.cube.draw(context, program_state, small_box_transform_1.times(box_transform).times(guy_transform), this.materials.plastic.override({color:blue}));
+//             // this.shapes.cube.draw(context, program_state, small_box_transform_2.times(box_transform).times(guy_transform), this.materials.plastic.override({color:blue}));
+
+//             defs.Cube.insert_transformed_copy_into(this, [10, 10], head.times(Mat4.translation(0,4,0)));
+//             defs.Cube.insert_transformed_copy_into(this, [] , body.times(Mat4.translation(0, 0.25, 0)));
+//             defs.Cube.insert_transformed_copy_into(this, [] , legs.times(Mat4.translation(-1.5,-2, 0)));
+//             defs.Cube.insert_transformed_copy_into(this, [] , legs.times(Mat4.translation(1.5,-2, 0)));
+//         }
+//     }
+
 class Cube_Outline extends Shape {
     constructor() {
-        super("position", "color");
+        super("position", "color", "texture_coord");
         //  TODO (Requirement 5).
         // When a set of lines is used in graphics, you should think of the list entries as
         // broken down into pairs; each pair of vertices will be drawn as a line segment.
@@ -90,6 +113,7 @@ class Base_Scene extends Scene {
 
             'floor': new Cube(),
             'building': new Cube(),
+            // 'guy': new guy(),
         };
 
         // *** Materials
@@ -98,8 +122,10 @@ class Base_Scene extends Scene {
                 {ambient: .4, diffusivity: .6, color: hex_color("#ffffff")}),
             floor: new Material(new defs.Phong_Shader(),
                 {ambient: .4, diffusivity: .6, color: hex_color("#0000ff")}),
-            building: new Material(new Textured_Phong(),
-                {ambient: .4, texture: new Texture("assets/BrickWall.jpg", "NEAREST")}),
+            building: new Material(new defs.Phong_Shader(),
+                {ambient: .4, diffusivity: .6, color: hex_color("#ff0000")}),
+            // building: new Material(new Textured_Phong(),
+            //     {ambient: .4, texture: new Texture("assets/BrickWall.jpg", "NEAREST")}),
         };
         // The white material and basic shader are used for drawing the outline.
         this.white = new Material(new defs.Basic_Shader());
@@ -164,55 +190,60 @@ export class Assignment2 extends Base_Scene {
             // TODO:  Requirement 3d:  Set a flag here that will toggle your swaying motion on and off.
             this.sitstill = !this.sitstill;
         });
+
+        this.key_triggered_button("Turn Left", ["l"], () => {
+            // TODO:  Requirement 3d:  Set a flag here that will toggle your swaying motion on and off.
+            ;
+        });
     }
 
-    draw_box(context, program_state, model_transform, boxnum, scalenum) {
-        // TODO:  Helper function for requirement 3 (see hint).
-        //        This should make changes to the model_transform matrix, draw the next box, and return the newest model_transform.
-        // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
-        const bc = this.boxcolors[boxnum];
-        const maxAngle = 0.5*Math.PI/8;
-        const t = this.t = program_state.animation_time / 1000;
-        var rotAngle = 0;
-        if (this.sitstill)
-        {
-            rotAngle = maxAngle;
-        }
-        else
-        {
-            if(boxnum == 0)
-            {
-                rotAngle = 0;
-            }
-            else
-            {
-                rotAngle = ((maxAngle/2)+(maxAngle/2)*(Math.sin(Math.PI*(t))));
-            }
-        }
+    // draw_box(context, program_state, model_transform, boxnum, scalenum=1) {
+    //     // TODO:  Helper function for requirement 3 (see hint).
+    //     //        This should make changes to the model_transform matrix, draw the next box, and return the newest model_transform.
+    //     // Hint:  You can add more parameters for this function, like the desired color, index of the box, etc.
+    //     const bc = this.boxcolors[boxnum];
+    //     const maxAngle = 0.5*Math.PI/8;
+    //     const t = this.t = program_state.animation_time / 1000;
+    //     var rotAngle = 0;
+    //     if (this.sitstill)
+    //     {
+    //         rotAngle = maxAngle;
+    //     }
+    //     else
+    //     {
+    //         if(boxnum == 0)
+    //         {
+    //             rotAngle = 0;
+    //         }
+    //         else
+    //         {
+    //             rotAngle = ((maxAngle/2)+(maxAngle/2)*(Math.sin(Math.PI*(t))));
+    //         }
+    //     }
 
-        model_transform = model_transform.times(Mat4.translation(-1,scalenum,0)).times(Mat4.rotation(rotAngle,0,0,1)).times(Mat4.translation(1,-scalenum,0)).times(Mat4.translation(0,2*scalenum,0));
-        // model_transform = model_transform.times(Mat4.scale(1,scalenum,1));
-        // model_transform = model_transform.times(Mat4.translation(0,num,0));
-        if(this.borders)
-        {
-            // this.shapes.Cube_Outline.draw(context, program_state, model_transform);
-            this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
-        }
-        else
-        {
-            if(boxnum % 2 == 0)
-            {
-                this.shapes.strip.draw(context, program_state, model_transform.times(Mat4.scale(1,scalenum,1)), this.materials.plastic.override({color:bc}),"TRIANGLE_STRIP");
-            }
-            else
-            {
-                this.shapes.cube.draw(context, program_state, model_transform.times(Mat4.scale(1,scalenum,1)), this.materials.plastic.override({color:bc}));
-            }
-        }
-        // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:boxColor}));
-        // model_transform = model_transform.times(Mat4.scale(1, (1/scalenum), 1));
-        return model_transform;
-    }
+    //     // model_transform = model_transform.times(Mat4.translation(-1,scalenum,0)).times(Mat4.rotation(rotAngle,0,0,1)).times(Mat4.translation(1,-scalenum,0)).times(Mat4.translation(0,2*scalenum,0));
+    //     // model_transform = model_transform.times(Mat4.scale(1,scalenum,1));
+    //     // model_transform = model_transform.times(Mat4.translation(0,num,0));
+    //     if(this.borders)
+    //     {
+    //         // this.shapes.Cube_Outline.draw(context, program_state, model_transform);
+    //         this.shapes.outline.draw(context, program_state, model_transform, this.white, "LINES");
+    //     }
+    //     else
+    //     {
+    //         if(boxnum % 2 == 0)
+    //         {
+    //             this.shapes.strip.draw(context, program_state, model_transform.times(Mat4.scale(1,scalenum,1)), this.materials.plastic.override({color:bc}),"TRIANGLE_STRIP");
+    //         }
+    //         else
+    //         {
+    //             this.shapes.cube.draw(context, program_state, model_transform.times(Mat4.scale(1,scalenum,1)), this.materials.plastic.override({color:bc}));
+    //         }
+    //     }
+    //     // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:boxColor}));
+    //     // model_transform = model_transform.times(Mat4.scale(1, (1/scalenum), 1));
+    //     return model_transform;
+    // }
 
     display(context, program_state) {
 
@@ -239,17 +270,40 @@ export class Assignment2 extends Base_Scene {
         // Example for drawing a cube, you can remove this line if needed
         // this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic.override({color:blue}));
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
-        // model_transform = this.draw_box(context, program_state, model_transform, 0, 1);
-        this.shapes.cube.draw(context, program_state, model_transform, this.materials.plastic);
+
+        let guy_translation = Mat4.translation(0,3,0);
+        // model_transform = this.draw_box(context, program_state, model_transform.times(Mat4.translation(0,2,0)), 0, 1);
+        // this.shapes.cube.draw(context, program_state, model_transform.times(Mat4.translation(0,0,0)).times(Mat4.translation(0,2,0)).times(Mat4.scale(1,1.3,1)), this.materials.plastic.override({color:blue}));
+        
 
         let t = program_state.animation_time;
+        
+
+        let LeftLeg = model_transform.times(Mat4.translation(-0.55, -1.4, 0)).times(Mat4.scale(0.4, 0.4, 0.4)).times(Mat4.scale(1,2,1)).times(guy_translation);
+
+        let RightLeg = model_transform.times(Mat4.translation(0.6, -1.4, 0)).times(Mat4.scale(0.4, 0.4, 0.4)).times(Mat4.scale(1,2,1)).times(guy_translation);
+
+        let Head = model_transform.times(Mat4.translation(0, 1.7, 0)).times(Mat4.scale(0.7, 0.7, 0.7)).times(guy_translation);
+        let BodyTransform = model_transform.times(Mat4.translation(0, -1, 0)).times(guy_translation);
+
+        this.shapes.cube.draw(context, program_state, BodyTransform, this.materials.plastic.override({color:blue}));
+
+        this.shapes.cube.draw(context, program_state, LeftLeg, this.materials.plastic.override({color:blue}));
+        this.shapes.cube.draw(context, program_state, RightLeg, this.materials.plastic.override({color:blue}));
+        this.shapes.cube.draw(context, program_state, Head, this.materials.plastic.override({color:blue}));
+
         
 
         let floor_transform = model_transform.times(Mat4.scale(150, 0.5, 150)).times(Mat4.translation(0, -2.5, 0));
         this.shapes.floor.draw(context, program_state, floor_transform, this.materials.floor);
         
-        let building_transform = model_transform.times(Mat4.scale(5,10,5)).times(Mat4.translation(5,0,5));
-        this.shapes.building.draw(context, program_state, building_transform, this.materials.building);
+        let building_transform1 = model_transform.times(Mat4.scale(5,10,10)).times(Mat4.translation(5,0,5));
+        this.shapes.building.draw(context, program_state, building_transform1, this.materials.building);
 
+        let building_transform2 = model_transform.times(Mat4.scale(5,10,5)).times(Mat4.translation(-5,0,5));
+        this.shapes.building.draw(context, program_state, building_transform2, this.materials.building);
+
+        let building_transform3 = model_transform.times(Mat4.scale(10,10,5)).times(Mat4.translation(0,0,-5));
+        this.shapes.building.draw(context, program_state, building_transform3, this.materials.building);
     }
 }
